@@ -1,18 +1,14 @@
 <script>
-  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  let now = new Date();
+  import Router from "svelte-spa-router";
+  import NotFound from "./routes/NotFound.svelte";
+  import Waiting from "./routes/Waiting.svelte";
 
-  const halfSecondMs = 3000;
-  setInterval(() => {
-    now = new Date();
-  }, halfSecondMs);
-
+  const routes = {
+    "/": Waiting,
+    "*": NotFound
+  }
 </script>
 
 <main>
-  <h1>CAIXA LIVRE</h1>
-  <section>
-    <h2>{now.getHours()}:{now.getMinutes()}</h2>
-    <p>{now.getDay()} {months[now.getMonth()].toUpperCase()} {now.getFullYear()}</p>
-  </section>
+  <Router {routes}/>
 </main>
