@@ -2,7 +2,7 @@
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     let now = new Date();
   
-    const halfSecondMs = 3000;
+    const halfSecondMs = 30000;
     setInterval(() => {
       now = new Date();
     }, halfSecondMs);
