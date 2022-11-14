@@ -1,4 +1,6 @@
 <script>
+  import { push } from "svelte-spa-router";
+
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   let now = new Date();
 
@@ -7,6 +9,10 @@
     now = new Date();
   }, halfSecondMs);
 
+
+  const onKeyDown = () => {
+    push("/sell");
+  }
 </script>
 
 <main>
@@ -33,3 +39,5 @@
     gap: 1rem;
   }
 </style>
+
+<svelte:window on:keydown|preventDefault={onKeyDown} />
