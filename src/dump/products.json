@@ -1,52 +1,52 @@
 [
     {
-        "code": 1,
+        "code": "1",
         "name": "Product A",
-        "value": 10
+        "value": 12.99
     },
     {
-        "code": 2,
+        "code": "2",
         "name": "Product B",
-        "value": 10
+        "value": 32.5
     },
     {
-        "code": 3,
+        "code": "3",
         "name": "Product C",
-        "value": 10
+        "value": 12
     },
     {
-        "code": 4,
+        "code": "4",
         "name": "Product D",
-        "value": 10
+        "value": 5
     },
     {
-        "code": 5,
+        "code": "5",
         "name": "Product E",
         "value": 10
     },
     {
-        "code": 6,
+        "code": "6",
         "name": "Product F",
         "value": 10
     },
     {
-        "code": 7,
+        "code": "7",
         "name": "Product G",
         "value": 10
     },
     {
-        "code": 8,
+        "code": "8",
         "name": "Product H",
         "value": 10
     },
     {
-        "code": 9,
+        "code": "9",
         "name": "Product HI",
-        "value": 10
+        "value": 9
     },
     {
-        "code": 10,
+        "code": "10",
         "name": "Product J",
-        "value": 10
+        "value": 100
     }
 ]

@@ -1,13 +1,27 @@
 <script>
     import ProductPanel from "../components/ProductPanel.svelte";
-    import products from "../dump/products.json";
-    let visibleProducts = products;
-
     import Quagga from "quagga";
+    import products from "../dump/products.json";
 
+    let cart = [];
+    let visibleProducts = products;
     let scannerRef;
     let a, o, g;
     let searchProductBy = "";
+
+    $: cartTotal = cart.reduce((total, product) => total + Number(product.quantity) * Number(product.value), 0)
+    
+    const addProduct = (newProduct) => {
+        const productIndexOnCart = cart.findIndex(product => product.code === newProduct.code);
+
+        if (productIndexOnCart >= 0) {
+            ++cart[productIndexOnCart].quantity;
+            cart = cart;
+        } else {
+            newProduct.quantity = 1;
+            cart = [...cart, newProduct];
+        }
+    }
 
     const scan = () => {
         Quagga.init({
@@ -81,10 +95,12 @@
         </header>
         <main>
             <ul>
-                {#each visibleProducts as product, i} 
-                <li id={"product" + i}>
-                    <ProductPanel name={product.name} value={product.value} />
-                </li>
+                {#each visibleProducts as product, i}
+                <button on:click={() => addProduct(product)}>
+                    <li id={"product" + i} >
+                        <ProductPanel name={product.name} value={product.value} />
+                    </li>
+                </button>
                 {/each}
             </ul>
         </main>
@@ -95,21 +111,21 @@
         </header>
         <main>
             <ul>
-                {#each Array(20) as _, _}
-                <li>
+                {#each cart as product, i}
+                <li id={"cartProduct" + i}>
                     <main>
-                        <span>2x</span>
-                        <h3>Product X</h3>
+                        <span>{product.quantity}x</span>
+                        <h3>{product.name}</h3>
                     </main>
-                    <aside>$ 10</aside>
+                    <aside>$ {product.value * product.quantity}</aside>
                 </li>
                 {/each}
             </ul>
         </main>
         <footer>
             <main>
-                <h4>Total $ </h4>
-                <p>10</p>
+                <h4>Total </h4>
+                <p>$ {cartTotal.toFixed(2)}</p>
             </main>
             <footer>
                 <button>Submit</button>
@@ -181,5 +197,11 @@
 
     #camera {
         display: none;
+    }
+
+    ul button {
+        padding: 0;
+        border: 0;
+        margin: 0;
     }
 </style>
