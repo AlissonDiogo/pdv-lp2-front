@@ -1,5 +1,8 @@
 <script>
     import ProductPanel from "../components/ProductPanel.svelte";
+    import products from "../dump/products.json";
+    let visibleProducts = products;
+
     import Quagga from "quagga";
 
     let scannerRef;
@@ -53,20 +56,34 @@
         setupAudio();
         scan();
     }
+
+    const handleSearch = (e) => {
+        searchProductBy = e.target.value
+        const regexSearch = new RegExp(searchProductBy, "i");
+        visibleProducts = products.filter(product =>
+            regexSearch.test(product.name) ||
+            regexSearch.test(product.code)
+        )
+    }
 </script>
 
 <section id="sell-container">
     <aside>
         <header>
-            <input type="text" autofocus value={searchProductBy}/>
+            <input
+                type="text"
+                value={searchProductBy}
+                on:input={handleSearch}
+                placeholder="Search by name or code"
+                autofocus  />
             <section id="camera" bind:this={scannerRef} />
             <button on:click={initScan}>Scan</button>
         </header>
         <main>
             <ul>
-                {#each Array(20) as _,_} 
-                <li>
-                    <ProductPanel name="Product" value="10"/>
+                {#each visibleProducts as product, i} 
+                <li id={"product" + i}>
+                    <ProductPanel name={product.name} value={product.value} />
                 </li>
                 {/each}
             </ul>
