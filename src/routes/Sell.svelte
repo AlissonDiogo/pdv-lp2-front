@@ -1,12 +1,66 @@
 <script>
     import ProductPanel from "../components/ProductPanel.svelte";
+    import Quagga from "quagga";
+
+    let scannerRef;
+    let a, o, g;
+    let searchProductBy = "";
+
+    const scan = () => {
+        Quagga.init({
+        inputStream : {
+            name : "Live",
+            type : "LiveStream",
+            target: scannerRef
+        },
+        decoder : {
+            readers : ["ean_reader"]
+        }
+        }, function(err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+
+            Quagga.start();
+        });
+    };
+
+    Quagga.onDetected((data) => {
+        searchProductBy = data.codeResult.code;
+        console.log(data)
+        beep();
+        Quagga.stop();
+    });
+
+    const setupAudio = () => {
+		let AudioContext = window.AudioContext;
+		a = new AudioContext();
+	}
+
+    const beep = () => {
+		o = a.createOscillator();
+		g = a.createGain();
+		o.connect(g);
+		o.type = "square";
+		o.frequency.value = 620;
+		g.connect(a.destination);
+		o.start(a.currentTime);
+		o.stop(a.currentTime + 0.1);
+	};
+
+    const initScan = () => {
+        setupAudio();
+        scan();
+    }
 </script>
 
 <section id="sell-container">
     <aside>
         <header>
-            <input type="text" autofocus/>
-            <button>By Code</button>
+            <input type="text" autofocus value={searchProductBy}/>
+            <section id="camera" bind:this={scannerRef} />
+            <button on:click={initScan}>Scan</button>
         </header>
         <main>
             <ul>
@@ -106,5 +160,9 @@
         display: flex;
         justify-content: space-between;
         gap: 1rem;
+    }
+
+    #camera {
+        display: none;
     }
 </style>
