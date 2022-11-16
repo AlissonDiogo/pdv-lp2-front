@@ -1,201 +1,237 @@
 <script>
-    import ProductPanel from "../components/ProductPanel.svelte";
-    import Quagga from "quagga";
-    import products from "../dump/products.json";
+  import ProductPanel from "../components/ProductPanel.svelte";
+  import Quagga from "quagga";
+  import products from "../dump/products.json";
+  import DialogNewProduct from "../components/DialogNewProduct.svelte";
+  import { Modals, openModal, closeModal } from "svelte-modals";
+  import { fade } from "svelte/transition";
 
-    let cart = [];
-    let visibleProducts = products;
-    let scannerRef;
-    let a, o, g;
-    let searchProductBy = "";
+  let cart = [];
+  let visibleProducts = products;
+  let scannerRef;
+  let a, o, g;
+  let searchProductBy = "";
 
-    $: cartTotal = cart.reduce((total, product) => total + Number(product.quantity) * Number(product.value), 0)
-    
-    const addProduct = (newProduct) => {
-        const productIndexOnCart = cart.findIndex(product => product.code === newProduct.code);
+  $: cartTotal = cart.reduce(
+    (total, product) =>
+      total + Number(product.quantity) * Number(product.value),
+    0
+  );
 
-        if (productIndexOnCart >= 0) {
-            ++cart[productIndexOnCart].quantity;
-            cart = cart;
-        } else {
-            newProduct.quantity = 1;
-            cart = [...cart, newProduct];
-        }
+  const addProduct = (newProduct) => {
+    const productIndexOnCart = cart.findIndex(
+      (product) => product.code === newProduct.code
+    );
+
+    if (productIndexOnCart >= 0) {
+      ++cart[productIndexOnCart].quantity;
+      cart = cart;
+    } else {
+      newProduct.quantity = 1;
+      cart = [...cart, newProduct];
     }
+  };
 
-    const scan = () => {
-        Quagga.init({
-        inputStream : {
-            name : "Live",
-            type : "LiveStream",
-            target: scannerRef
+  const scan = () => {
+    Quagga.init(
+      {
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: scannerRef,
         },
-        decoder : {
-            readers : ["ean_reader"]
+        decoder: {
+          readers: ["ean_reader"],
+        },
+      },
+      function (err) {
+        if (err) {
+          console.log(err);
+          return;
         }
-        }, function(err) {
-            if (err) {
-                console.log(err);
-                return;
-            }
 
-            Quagga.start();
-        });
-    };
+        Quagga.start();
+      }
+    );
+  };
 
-    Quagga.onDetected((data) => {
-        searchProductBy = data.codeResult.code;
-        console.log(data)
-        beep();
-        Quagga.stop();
-    });
+  Quagga.onDetected((data) => {
+    searchProductBy = data.codeResult.code;
+    console.log(data);
+    beep();
+    Quagga.stop();
+  });
 
-    const setupAudio = () => {
-		let AudioContext = window.AudioContext;
-		a = new AudioContext();
-	}
+  const setupAudio = () => {
+    let AudioContext = window.AudioContext;
+    a = new AudioContext();
+  };
 
-    const beep = () => {
-		o = a.createOscillator();
-		g = a.createGain();
-		o.connect(g);
-		o.type = "square";
-		o.frequency.value = 620;
-		g.connect(a.destination);
-		o.start(a.currentTime);
-		o.stop(a.currentTime + 0.1);
-	};
+  const beep = () => {
+    o = a.createOscillator();
+    g = a.createGain();
+    o.connect(g);
+    o.type = "square";
+    o.frequency.value = 620;
+    g.connect(a.destination);
+    o.start(a.currentTime);
+    o.stop(a.currentTime + 0.1);
+  };
 
-    const initScan = () => {
-        setupAudio();
-        scan();
-    }
+  const initScan = () => {
+    setupAudio();
+    scan();
+  };
 
-    const handleSearch = (e) => {
-        searchProductBy = e.target.value
-        const regexSearch = new RegExp(searchProductBy, "i");
-        visibleProducts = products.filter(product =>
-            regexSearch.test(product.name) ||
-            regexSearch.test(product.code)
-        )
-    }
+  const handleSearch = (e) => {
+    searchProductBy = e.target.value;
+    const regexSearch = new RegExp(searchProductBy, "i");
+    visibleProducts = products.filter(
+      (product) =>
+        regexSearch.test(product.name) || regexSearch.test(product.code)
+    );
+  };
+
+  const showNewProductDialog = () => {
+    openModal(DialogNewProduct);
+  };
 </script>
 
 <section id="sell-container">
-    <aside>
-        <header>
-            <input
-                type="text"
-                value={searchProductBy}
-                on:input={handleSearch}
-                placeholder="Search by name or code"
-                autofocus  />
-            <section id="camera" bind:this={scannerRef} />
-            <button on:click={initScan}>Scan</button>
-        </header>
-        <ul>
-            {#each visibleProducts as product, i}
-            <button on:click={() => addProduct(product)}>
-                <li id={"product" + i} >
-                    <ProductPanel name={product.name} value={product.value} />
-                </li>
-            </button>
-            {/each}
-        </ul>
-    </aside>
-    <main>
-        <header>
-            <h1>Cart</h1>
-        </header>
-        <ul>
-            {#each cart as product, i}
-            <li id={"cartProduct" + i}>
-                <section>
-                    <span>{product.quantity}x</span>
-                    <h3>{product.name}</h3>
-                </section>
-                <aside>$ {product.value * product.quantity}</aside>
-            </li>
-            {/each}
-        </ul>
-        <footer>
-            <section>
-                <h4>Total </h4>
-                <p>$ {cartTotal.toFixed(2)}</p>
-            </section>
-            <button>Submit</button>
-        </footer>
-    </main>
+  <aside>
+    <header>
+      <input
+        type="text"
+        value={searchProductBy}
+        on:input={handleSearch}
+        placeholder="Search by name or code"
+        autofocus
+      />
+      <section id="camera" bind:this={scannerRef} />
+      <button on:click={initScan}>Scan</button>
+      <button on:click={showNewProductDialog}>New product</button>
+    </header>
+    <ul>
+      {#each visibleProducts as product, i}
+        <button on:click={() => addProduct(product)}>
+          <li id={"product" + i}>
+            <ProductPanel name={product.name} value={product.value} />
+          </li>
+        </button>
+      {/each}
+    </ul>
+  </aside>
+  <main>
+    <header>
+      <h1>Cart</h1>
+    </header>
+    <ul>
+      {#each cart as product, i}
+        <li id={"cartProduct" + i}>
+          <section>
+            <span>{product.quantity}x</span>
+            <h3>{product.name}</h3>
+          </section>
+          <aside>$ {product.value * product.quantity}</aside>
+        </li>
+      {/each}
+    </ul>
+    <footer>
+      <section>
+        <h4>Total</h4>
+        <p>$ {cartTotal.toFixed(2)}</p>
+      </section>
+      <button>Submit</button>
+    </footer>
+  </main>
+
+  <Modals>
+    <div
+      slot="backdrop"
+      class="backdrop"
+      on:click={closeModal}
+      transition:fade
+    />
+  </Modals>
 </section>
 
 <style>
-    #sell-container {
-        display: flex;
-        justify-content: space-between;
-        height: 100vh;
-    }
+  #sell-container {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+  }
 
-    #sell-container > * {
-        padding: 2rem;
-    }
+  #sell-container > * {
+    padding: 2rem;
+  }
 
-    aside {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+  aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    aside ul {
-        width: 40rem;
-        overflow-y: scroll;
-    }
+  aside ul {
+    width: 40rem;
+    overflow-y: scroll;
+  }
 
-    aside input {
-        padding: .6rem;
-    }
+  aside input {
+    padding: 0.6rem;
+  }
 
-    aside > header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
+  aside > header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 
-    main {
-        background-color: var(--dark-color);
-        width: 30rem;
-        display: flex;
-        gap: 1rem;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+  main {
+    background-color: var(--dark-color);
+    width: 30rem;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-    main > ul {
-        overflow-y: scroll;
-    }
+  main > ul {
+    overflow-y: scroll;
+  }
 
-    aside ul,
-    main ul,
-    footer {
-        display: grid;
-        gap: 1rem;
-    }
+  aside ul,
+  main ul,
+  footer {
+    display: grid;
+    gap: 1rem;
+  }
 
-    aside li,
-    main li,
-    main li section,
-    footer > section {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-    }
+  aside li,
+  main li,
+  main li section,
+  footer > section {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
-    #camera {
-        display: none;
-    }
+  #camera {
+    display: none;
+  }
 
-    ul button {
-        padding: 0;
-        border: 0;
-        margin: 0;
-    }
+  ul button {
+    padding: 0;
+    border: 0;
+    margin: 0;
+  }
+
+  .backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
 </style>
