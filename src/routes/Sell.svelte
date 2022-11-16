@@ -93,55 +93,49 @@
             <section id="camera" bind:this={scannerRef} />
             <button on:click={initScan}>Scan</button>
         </header>
-        <main>
-            <ul>
-                {#each visibleProducts as product, i}
-                <button on:click={() => addProduct(product)}>
-                    <li id={"product" + i} >
-                        <ProductPanel name={product.name} value={product.value} />
-                    </li>
-                </button>
-                {/each}
-            </ul>
-        </main>
+        <ul>
+            {#each visibleProducts as product, i}
+            <button on:click={() => addProduct(product)}>
+                <li id={"product" + i} >
+                    <ProductPanel name={product.name} value={product.value} />
+                </li>
+            </button>
+            {/each}
+        </ul>
     </aside>
-    <main id="cart-container">
+    <main>
         <header>
             <h1>Cart</h1>
         </header>
-        <main>
-            <ul>
-                {#each cart as product, i}
-                <li id={"cartProduct" + i}>
-                    <main>
-                        <span>{product.quantity}x</span>
-                        <h3>{product.name}</h3>
-                    </main>
-                    <aside>$ {product.value * product.quantity}</aside>
-                </li>
-                {/each}
-            </ul>
-        </main>
+        <ul>
+            {#each cart as product, i}
+            <li id={"cartProduct" + i}>
+                <section>
+                    <span>{product.quantity}x</span>
+                    <h3>{product.name}</h3>
+                </section>
+                <aside>$ {product.value * product.quantity}</aside>
+            </li>
+            {/each}
+        </ul>
         <footer>
-            <main>
+            <section>
                 <h4>Total </h4>
                 <p>$ {cartTotal.toFixed(2)}</p>
-            </main>
-            <footer>
-                <button>Submit</button>
-            </footer>
+            </section>
+            <button>Submit</button>
         </footer>
     </main>
 </section>
 
 <style>
-    section {
+    #sell-container {
         display: flex;
         justify-content: space-between;
         height: 100vh;
     }
 
-    section > * {
+    #sell-container > * {
         padding: 2rem;
     }
 
@@ -151,9 +145,9 @@
         gap: 1rem;
     }
 
-    aside > main {
+    aside ul {
         width: 40rem;
-        overflow: scroll;
+        overflow-y: scroll;
     }
 
     aside input {
@@ -166,7 +160,7 @@
         gap: 1rem;
     }
 
-    #cart-container {
+    main {
         background-color: var(--dark-color);
         width: 30rem;
         display: flex;
@@ -175,21 +169,21 @@
         justify-content: space-between;
     }
 
-    #cart-container > main {
-        overflow: scroll;
+    main > ul {
+        overflow-y: scroll;
     }
 
     aside ul,
-    #cart-container ul,
+    main ul,
     footer {
         display: grid;
         gap: 1rem;
     }
 
     aside li,
-    #cart-container li,
-    #cart-container li main,
-    footer > main {
+    main li,
+    main li section,
+    footer > section {
         display: flex;
         justify-content: space-between;
         gap: 1rem;
