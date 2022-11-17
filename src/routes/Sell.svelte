@@ -1,33 +1,35 @@
 <script>
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
-  import products from "../dump/products.json";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
-
+  import { onMount } from "svelte";
+  import { findAllProducts } from "../api/products";
+  
+  let products = [];
+  let visibleProducts = [];
   let cart = [];
-  let visibleProducts = products;
   let scannerRef;
   let a, o, g;
   let searchProductBy = "";
 
-  $: cartTotal = cart.reduce(
-    (total, product) =>
-      total + Number(product.quantity) * Number(product.value),
-    0
-  );
-
+  $: cartTotal = cart.reduce((total, product) => total + Number(product.order) * Number(product.price), 0)
+    
+  onMount(async () => {
+    const res = await findAllProducts();
+    products = res;
+    visibleProducts = products;
+  });
+    
   const addProduct = (newProduct) => {
-    const productIndexOnCart = cart.findIndex(
-      (product) => product.code === newProduct.code
-    );
+    const productIndexOnCart = cart.findIndex(product => product.id === newProduct.id);
 
     if (productIndexOnCart >= 0) {
-      ++cart[productIndexOnCart].quantity;
+      ++cart[productIndexOnCart].order;
       cart = cart;
     } else {
-      newProduct.quantity = 1;
+      newProduct.order = 1;
       cart = [...cart, newProduct];
     }
   };
@@ -88,7 +90,7 @@
     const regexSearch = new RegExp(searchProductBy, "i");
     visibleProducts = products.filter(
       (product) =>
-        regexSearch.test(product.name) || regexSearch.test(product.code)
+        regexSearch.test(product.name) || regexSearch.test(product.id)
     );
   };
 
@@ -115,7 +117,7 @@
       {#each visibleProducts as product, i}
         <button on:click={() => addProduct(product)}>
           <li id={"product" + i}>
-            <ProductPanel name={product.name} value={product.value} />
+            <ProductPanel name={product.name} value={product.price} />
           </li>
         </button>
       {/each}
@@ -129,10 +131,10 @@
       {#each cart as product, i}
         <li id={"cartProduct" + i}>
           <section>
-            <span>{product.quantity}x</span>
+            <span>{product.order}x</span>
             <h3>{product.name}</h3>
           </section>
-          <aside>$ {product.value * product.quantity}</aside>
+          <aside>$ {product.price * product.order}</aside>
         </li>
       {/each}
     </ul>
