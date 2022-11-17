@@ -1,14 +1,21 @@
 <script>
   import { closeModal } from "svelte-modals";
+  import { saveProduct } from "../api/products";
 
   export let isOpen;
   let form = {};
 
-  const submitForm = () => {
+  const submitForm = async () => {
     console.log({ form });
     let findError = verifyErrors();
     if (!findError) {
-      //submit
+      delete form.error;
+      const product = await saveProduct(form);
+      if (product) {
+        closeModal();
+      } else {
+        form = {}
+      }
     }
   };
 

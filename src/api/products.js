@@ -8,3 +8,12 @@ export const findAllProducts = async () => {
       console.error(error);
     }
 };
+
+export const saveProduct = async (product) => {
+  try {
+    const response = await api.post("/products", product);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}
