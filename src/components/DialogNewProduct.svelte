@@ -13,23 +13,13 @@
   };
 
   const verifyErrors = () => {
-    let findError = false;
-    if (!form.name) {
-      form.error = { ...form.error, name: true };
-      findError = true;
-    }
-    if (!form.price) {
-      form.error = { ...form.error, price: true };
-      findError = true;
-    }
-    if (!form.category) {
-      form.error = { ...form.error, category: true };
-      findError = true;
-    }
-    if (!form.quantity) {
-      form.error = { ...form.error, quantity: true };
-      findError = true;
-    }
+    let findError = !form.name || !form.price || !form.category || !form.quantity;
+    form.error = { 
+      name: !form.name,
+      price: !form.price,
+      category: !form.category,
+      quantity: !form.quantity,
+    };
     return findError;
   };
 
