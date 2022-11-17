@@ -188,7 +188,7 @@
   }
 
   main {
-    background-color: var(--dark-color);
+    background-color: var(--light-color);
     width: 30rem;
     display: flex;
     gap: 1rem;

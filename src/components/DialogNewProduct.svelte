@@ -52,7 +52,6 @@
     <div class="contents">
       <h2>Create a new product</h2>
 
-      <hr class="divider" />
       <form method="POST">
         <label for="name">Product name</label>
         <input
@@ -113,6 +112,11 @@
 {/if}
 
 <style>
+  form {
+    display: grid;
+    gap: .4rem;
+  }
+
   .modal {
     position: fixed;
     top: 0;
@@ -131,25 +135,17 @@
     min-width: 240px;
     border-radius: 6px;
     padding: 16px;
-    background: white;
     display: flex;
+    gap: 2rem;
     flex-direction: column;
     justify-content: space-between;
     pointer-events: auto;
-    color: #000;
+    background-color: var(--bg-color);
   }
 
   h2 {
     text-align: center;
     font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  .divider {
-    height: 1px;
-    width: 111%;
-    background-color: #000;
-    transform: translateX(-5%);
     margin-bottom: 10px;
   }
 
@@ -161,7 +157,8 @@
 
   .cancel-button {
     margin-right: 10px;
-    background-color: red;
+    background-color: #e80505;
+    color: white;
   }
 
   input {
@@ -170,7 +167,7 @@
   }
 
   .error {
-    color: red;
+    color: #e80505;
     font-size: 12px;
   }
 
