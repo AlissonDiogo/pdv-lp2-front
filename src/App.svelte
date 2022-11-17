@@ -7,10 +7,10 @@
   const routes = {
     "/": Waiting,
     "/sell": Sell,
-    "*": NotFound
-  }
+    "*": NotFound,
+  };
 </script>
 
 <main>
-  <Router {routes}/>
+  <Router {routes} />
 </main>
