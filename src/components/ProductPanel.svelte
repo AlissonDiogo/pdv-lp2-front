@@ -12,7 +12,7 @@
         display: flex;
         justify-content: space-between;
         width: 100%;
-        background-color: var(--dark-color);
+        background-color: var(--light-color);
         padding: 1rem;
     }
 </style>
