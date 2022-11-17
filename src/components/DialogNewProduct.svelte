@@ -13,14 +13,13 @@
   };
 
   const verifyErrors = () => {
-    let findError = !form.name || !form.price || !form.category || !form.quantity;
     form.error = { 
       name: !form.name,
       price: !form.price,
       category: !form.category,
       quantity: !form.quantity,
     };
-    return findError;
+    return !form.name || !form.price || !form.category || !form.quantity;
   };
 
   const handleChangeName = (e) => {
