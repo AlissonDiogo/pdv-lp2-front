@@ -5,7 +5,7 @@
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import { findAllProducts } from "../api/products";
+  import { findAllProducts, findByNameRegex } from "../api/products";
   
   let products = [];
   let visibleProducts = [];
@@ -85,14 +85,14 @@
     scan();
   };
 
-  const handleSearch = (e) => {
+  const setSearchProductBy = (e) => {
     searchProductBy = e.target.value;
-    const regexSearch = new RegExp(searchProductBy, "i");
-    visibleProducts = products.filter(
-      (product) =>
-        regexSearch.test(product.name) || regexSearch.test(product.id)
-    );
   };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    visibleProducts = await findByNameRegex(searchProductBy);
+  }
 
   const showNewProductDialog = () => {
     openModal(DialogNewProduct);
@@ -102,13 +102,16 @@
 <section id="sell-container">
   <aside>
     <header>
-      <input
-        type="text"
-        value={searchProductBy}
-        on:input={handleSearch}
-        placeholder="Search by name or code"
-        autofocus
-      />
+      <form on:submit={handleSearch}>
+        <input
+          type="text"
+          value={searchProductBy}
+          on:input={setSearchProductBy}
+          placeholder="Search by name"
+          autofocus
+        />
+        <button>Search</button>
+      </form>
       <section id="camera" bind:this={scannerRef} />
       <button on:click={initScan}>Scan</button>
       <button on:click={showNewProductDialog}>New product</button>
