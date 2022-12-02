@@ -80,6 +80,17 @@
     o.stop(a.currentTime + 0.1);
   };
 
+  const beepError = () => {
+    o = a.createOscillator();
+    g = a.createGain();
+    o.connect(g);
+    o.type = "circle";
+    o.frequency.value = 300;
+    g.connect(a.destination);
+    o.start(a.currentTime);
+    o.stop(a.currentTime + 0.2);
+  };
+
   const initScan = () => {
     setupAudio();
     scan();
