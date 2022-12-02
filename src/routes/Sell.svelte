@@ -6,6 +6,7 @@
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import { findAllProducts, findByNameRegex } from "../api/products";
+  import html2pdf from "html2pdf.js";
   
   let products = [];
   let visibleProducts = [];
@@ -89,6 +90,24 @@
     searchProductBy = e.target.value;
   };
 
+  const downloadCartPDF = () => {
+    const productsText = document.getElementById("products-cart").innerText;
+    const totalText = document.getElementById("total-section").innerText;
+
+    const note = document.createElement("section");
+    note.style.color = "black";
+    note.style.backgroundColor = "white";
+    note.innerText = productsText + '\n' + totalText;
+
+    const optsPDF = {
+      margin: 1,
+      filename: `Fiscal Note`,
+      html2canvas: { scale: 2 },
+    };
+
+    html2pdf().from(note).set(optsPDF).save();
+  }
+
   const handleSearch = async (e) => {
     e.preventDefault();
     visibleProducts = await findByNameRegex(searchProductBy);
@@ -130,7 +149,7 @@
     <header>
       <h1>Cart</h1>
     </header>
-    <ul>
+    <ul id="products-cart">
       {#each cart as product, i}
         <li id={"cartProduct" + i}>
           <section>
@@ -142,7 +161,7 @@
       {/each}
     </ul>
     <footer>
-      <section>
+      <section id="total-section">
         <h4>Total</h4>
         <p>$ {cartTotal.toFixed(2)}</p>
       </section>
