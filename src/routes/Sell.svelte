@@ -1,12 +1,12 @@
 <script>
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
+  import html2pdf from "html2pdf.js";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import { findAllProducts, findByNameRegex } from "../api/products";
-  import html2pdf from "html2pdf.js";
+  import { findAllProducts, findByNameRegex, findByBarcode } from "../api/products";
   
   let products = [];
   let visibleProducts = [];
@@ -58,11 +58,16 @@
     );
   };
 
-  Quagga.onDetected((data) => {
-    searchProductBy = data.codeResult.code;
-    console.log(data);
-    beep();
-    Quagga.stop();
+  Quagga.onDetected(async (data) => {
+    const barcode = data.codeResult.code;
+    try {
+      const product = await findByBarcode(barcode);
+      addProduct(product);
+      beep();
+      Quagga.stop();
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   const setupAudio = () => {
