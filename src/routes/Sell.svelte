@@ -89,9 +89,11 @@
     const barcode = data.codeResult.code;
     try {
       const product = await findByBarcode(barcode);
-      addProduct(product);
-      beep();
-      Quagga.stop();
+      if (product) {
+        addProduct(product);
+        beep();
+        Quagga.stop();
+      }
     } catch (error) {
       console.error(error);
     }
