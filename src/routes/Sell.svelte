@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
+  import html2pdf from "html2pdf.js";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
   import DialogFailed from "../components/DialogFailed.svelte";
   import DialogEndSale from "../components/DialogEndSale.svelte";
@@ -125,6 +126,29 @@
     searchProductBy = e.target.value;
   };
 
+  const downloadCartPDF = (products, paymentWay, subTotal, totalWithTaxes) => {
+    const note = document.createElement("section");
+    note.style.color = "black";
+    note.style.backgroundColor = "white";
+
+    note.innerHTML += `Products:<br/>`;
+    products.forEach((product) => {
+      note.innerHTML += `${product.name} $ ${product.price}<br/>`;
+    });
+    note.innerHTML += '<br/>';
+    note.innerHTML += `Subtotal: $ ${subTotal}<br/>`;
+    note.innerHTML += `Payment way: ${paymentWay.name} (Tax ${paymentWay.tax * 100}%)<br/>`;
+    note.innerHTML += `Total with taxes: $ ${totalWithTaxes}`;
+
+    const optsPDF = {
+      margin: 1,
+      filename: `Fiscal Note`,
+      html2canvas: { scale: 2 },
+    };
+
+    html2pdf().from(note).set(optsPDF).save();
+  }
+
   const handleSearch = async (e) => {
     e.preventDefault();
     visibleProducts = await findByNameRegex(searchProductBy);
@@ -138,7 +162,8 @@
     openModal(DialogEndSale, { cart, cartTotal, onFinishSale });
   };
 
-  const onFinishSale = () => {
+  const onFinishSale = (products, paymentWay, subTotal, totalWithTaxes) => {
+    downloadCartPDF(products, paymentWay, subTotal, totalWithTaxes);
     cart = [];
     closeModal();
   };
@@ -175,7 +200,7 @@
     <header>
       <h1>Cart</h1>
     </header>
-    <ul>
+    <ul id="products-cart">
       {#each cart as product, i}
         <li id={"cartProduct" + i}>
           <section>
@@ -187,7 +212,7 @@
       {/each}
     </ul>
     <footer>
-      <section>
+      <section id="total-section">
         <h4>Total</h4>
         <p>$ {cartTotal.toFixed(2)}</p>
       </section>

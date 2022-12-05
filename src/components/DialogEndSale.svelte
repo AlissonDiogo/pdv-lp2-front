@@ -34,12 +34,14 @@
   };
 
   const endSale = async () => {
+    const { paymentWay } = formEndSale;
+    const products = formatProductsToSend();
     const res = await saveSale({
-      paymentWay: formEndSale.paymentWay,
-      products: formatProductsToSend(),
+      paymentWay,
+      products,
     });
     if (res && res.id) {
-      onFinishSale();
+      onFinishSale(products, paymentWay, cartTotal.toFixed(2), cartTotalWithTax.toFixed(2));
       closeModal();
     }
   };
