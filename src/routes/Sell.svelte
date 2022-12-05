@@ -70,6 +70,7 @@
           type: "LiveStream",
           target: scannerRef,
         },
+        frequency: 25,
         decoder: {
           readers: ["ean_reader"],
         },
