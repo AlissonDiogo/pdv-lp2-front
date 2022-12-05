@@ -132,12 +132,12 @@
 
     note.innerHTML += `Products:<br/>`;
     products.forEach((product) => {
-      note.innerHTML += `${product.name} R$ ${product.price}<br/>`;
+      note.innerHTML += `${product.name} $ ${product.price}<br/>`;
     });
     note.innerHTML += '<br/>';
-    note.innerHTML += `Subtotal: R$ ${subTotal}<br/>`;
-    note.innerHTML += `Payment way: ${paymentWay.name} (Tax ${paymentWay.tax})<br/>`;
-    note.innerHTML += `Total with taxes: R$ ${totalWithTaxes}`;
+    note.innerHTML += `Subtotal: $ ${subTotal}<br/>`;
+    note.innerHTML += `Payment way: ${paymentWay.name} (Tax ${paymentWay.tax * 100}%)<br/>`;
+    note.innerHTML += `Total with taxes: $ ${totalWithTaxes}`;
 
     const optsPDF = {
       margin: 1,
