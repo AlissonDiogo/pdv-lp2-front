@@ -125,14 +125,19 @@
     searchProductBy = e.target.value;
   };
 
-  const downloadCartPDF = () => {
-    const productsText = document.getElementById("products-cart").innerText;
-    const totalText = document.getElementById("total-section").innerText;
-
+  const downloadCartPDF = (products, paymentWay, subTotal, totalWithTaxes) => {
     const note = document.createElement("section");
     note.style.color = "black";
     note.style.backgroundColor = "white";
-    note.innerText = productsText + '\n' + totalText;
+
+    note.innerHTML += `Products:<br/>`;
+    products.forEach((product) => {
+      note.innerHTML += `${product.name} R$ ${product.price}<br/>`;
+    });
+    note.innerHTML += '<br/>';
+    note.innerHTML += `Subtotal: R$ ${subTotal}<br/>`;
+    note.innerHTML += `Payment way: ${paymentWay.name} (Tax ${paymentWay.tax})<br/>`;
+    note.innerHTML += `Total with taxes: R$ ${totalWithTaxes}`;
 
     const optsPDF = {
       margin: 1,
@@ -156,7 +161,8 @@
     openModal(DialogEndSale, { cart, cartTotal, onFinishSale });
   };
 
-  const onFinishSale = () => {
+  const onFinishSale = (products, paymentWay, subTotal, totalWithTaxes) => {
+    downloadCartPDF(products, paymentWay, subTotal, totalWithTaxes);
     cart = [];
     closeModal();
   };
