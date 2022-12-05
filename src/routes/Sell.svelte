@@ -2,6 +2,7 @@
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
+  import DialogFailedAddProduct from "../components/DialogFailedAddProduct.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
@@ -40,12 +41,23 @@
       if (await verifyIsAvailableByQuantity(name, order + 1)) {
         ++cart[productIndexOnCart].order;
         cart = cart;
+      } else {
+        openModal(DialogFailedAddProduct, {
+          title: `Product is not available in ${order + 1} quantity.`,
+        });
       }
     } else {
       newProduct.order = 1;
-      if (await verifyIsAvailableByQuantity(newProduct.name, newProduct.order))
+      if (
+        await verifyIsAvailableByQuantity(newProduct.name, newProduct.order)
+      ) {
         cart = [...cart, newProduct];
-    } 
+      } else {
+        openModal(DialogFailedAddProduct, {
+          title: "Product is not available.",
+        });
+      }
+    }
   };
 
   const scan = () => {
