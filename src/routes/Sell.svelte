@@ -1,11 +1,13 @@
 <script>
+  import { onMount } from "svelte";
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
   import DialogFailed from "../components/DialogFailed.svelte";
+  import DialogEndSale from "../components/DialogEndSale.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
+
   import {
     findAllProducts,
     findByNameRegex,
@@ -128,6 +130,15 @@
   const showNewProductDialog = () => {
     openModal(DialogNewProduct);
   };
+
+  const showEndSaleDialog = () => {
+    openModal(DialogEndSale, { cart, cartTotal, onFinishSale });
+  };
+
+  const onFinishSale = () => {
+    cart = [];
+    closeModal();
+  };
 </script>
 
 <section id="sell-container">
@@ -177,7 +188,7 @@
         <h4>Total</h4>
         <p>$ {cartTotal.toFixed(2)}</p>
       </section>
-      <button>Submit</button>
+      <button on:click={showEndSaleDialog}>Submit</button>
     </footer>
   </main>
 
