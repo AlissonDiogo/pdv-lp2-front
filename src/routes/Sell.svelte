@@ -3,7 +3,7 @@
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
-  import DialogFailedAddProduct from "../components/DialogFailedAddProduct.svelte";
+  import DialogFailed from "../components/DialogFailed.svelte";
   import DialogEndSale from "../components/DialogEndSale.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
@@ -44,7 +44,7 @@
         ++cart[productIndexOnCart].order;
         cart = cart;
       } else {
-        openModal(DialogFailedAddProduct, {
+        openModal(DialogFailed, {
           title: `Product is not available in ${order + 1} quantity.`,
         });
       }
@@ -55,7 +55,7 @@
       ) {
         cart = [...cart, newProduct];
       } else {
-        openModal(DialogFailedAddProduct, {
+        openModal(DialogFailed, {
           title: "Product is not available.",
         });
       }
