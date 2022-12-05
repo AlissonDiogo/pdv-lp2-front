@@ -7,7 +7,7 @@ export const findByBarcode = async (barcode) => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const findByNameRegex = async (name) => {
   try {
@@ -16,15 +16,15 @@ export const findByNameRegex = async (name) => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const findAllProducts = async () => {
-    try {
-      const response = await api.get("/products/findAll");
-      return response;
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const response = await api.get("/products/findAll");
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const saveProduct = async (product) => {
@@ -34,4 +34,15 @@ export const saveProduct = async (product) => {
   } catch (error) {
     console.error(error);
   }
-}
+};
+
+export const verifyIsAvailableByQuantity = async (name, order) => {
+  try {
+    const response = await api.get(
+      `/products/verifyIsAvailable?name=${name}&requestedQuantity=${order}`
+    );
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};

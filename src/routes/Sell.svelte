@@ -1,13 +1,21 @@
 <script>
+  import { onMount } from "svelte";
   import ProductPanel from "../components/ProductPanel.svelte";
   import Quagga from "quagga";
   import html2pdf from "html2pdf.js";
   import DialogNewProduct from "../components/DialogNewProduct.svelte";
+  import DialogFailed from "../components/DialogFailed.svelte";
+  import DialogEndSale from "../components/DialogEndSale.svelte";
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
-  import { findAllProducts, findByNameRegex, findByBarcode } from "../api/products";
-  
+
+  import {
+    findAllProducts,
+    findByNameRegex,
+    findByBarcode,
+    verifyIsAvailableByQuantity,
+  } from "../api/products";
+
   let products = [];
   let visibleProducts = [];
   let cart = [];
@@ -15,23 +23,43 @@
   let a, o, g;
   let searchProductBy = "";
 
-  $: cartTotal = cart.reduce((total, product) => total + Number(product.order) * Number(product.price), 0)
-    
+  $: cartTotal = cart.reduce(
+    (total, product) => total + Number(product.order) * Number(product.price),
+    0
+  );
+
   onMount(async () => {
     const res = await findAllProducts();
     products = res;
     visibleProducts = products;
   });
-    
-  const addProduct = (newProduct) => {
-    const productIndexOnCart = cart.findIndex(product => product.id === newProduct.id);
+
+  const addProduct = async (newProduct) => {
+    const productIndexOnCart = cart.findIndex(
+      (product) => product.id === newProduct.id
+    );
 
     if (productIndexOnCart >= 0) {
-      ++cart[productIndexOnCart].order;
-      cart = cart;
+      const { name, order } = cart[productIndexOnCart];
+      if (await verifyIsAvailableByQuantity(name, order + 1)) {
+        ++cart[productIndexOnCart].order;
+        cart = cart;
+      } else {
+        openModal(DialogFailed, {
+          title: `Product is not available in ${order + 1} quantity.`,
+        });
+      }
     } else {
       newProduct.order = 1;
-      cart = [...cart, newProduct];
+      if (
+        await verifyIsAvailableByQuantity(newProduct.name, newProduct.order)
+      ) {
+        cart = [...cart, newProduct];
+      } else {
+        openModal(DialogFailed, {
+          title: "Product is not available.",
+        });
+      }
     }
   };
 
@@ -62,9 +90,11 @@
     const barcode = data.codeResult.code;
     try {
       const product = await findByBarcode(barcode);
-      addProduct(product);
-      beep();
-      Quagga.stop();
+      if (product) {
+        addProduct(product);
+        beep();
+        Quagga.stop();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -116,10 +146,19 @@
   const handleSearch = async (e) => {
     e.preventDefault();
     visibleProducts = await findByNameRegex(searchProductBy);
-  }
+  };
 
   const showNewProductDialog = () => {
     openModal(DialogNewProduct);
+  };
+
+  const showEndSaleDialog = () => {
+    openModal(DialogEndSale, { cart, cartTotal, onFinishSale });
+  };
+
+  const onFinishSale = () => {
+    cart = [];
+    closeModal();
   };
 </script>
 
@@ -170,7 +209,7 @@
         <h4>Total</h4>
         <p>$ {cartTotal.toFixed(2)}</p>
       </section>
-      <button>Submit</button>
+      <button on:click={showEndSaleDialog}>Submit</button>
     </footer>
   </main>
 
