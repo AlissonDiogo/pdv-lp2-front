@@ -43,11 +43,6 @@
       closeModal();
     }
   };
-
-  // const onFinishSale = () => {
-  //   cart = [];
-  //   closeModal();
-  // };
 </script>
 
 {#if isOpen}
