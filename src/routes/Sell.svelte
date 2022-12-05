@@ -5,8 +5,13 @@
   import { Modals, openModal, closeModal } from "svelte-modals";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import { findAllProducts, findByNameRegex, findByBarcode } from "../api/products";
-  
+  import {
+    findAllProducts,
+    findByNameRegex,
+    findByBarcode,
+    verifyIsAvailableByQuantity,
+  } from "../api/products";
+
   let products = [];
   let visibleProducts = [];
   let cart = [];
@@ -14,24 +19,33 @@
   let a, o, g;
   let searchProductBy = "";
 
-  $: cartTotal = cart.reduce((total, product) => total + Number(product.order) * Number(product.price), 0)
-    
+  $: cartTotal = cart.reduce(
+    (total, product) => total + Number(product.order) * Number(product.price),
+    0
+  );
+
   onMount(async () => {
     const res = await findAllProducts();
     products = res;
     visibleProducts = products;
   });
-    
-  const addProduct = (newProduct) => {
-    const productIndexOnCart = cart.findIndex(product => product.id === newProduct.id);
+
+  const addProduct = async (newProduct) => {
+    const productIndexOnCart = cart.findIndex(
+      (product) => product.id === newProduct.id
+    );
 
     if (productIndexOnCart >= 0) {
-      ++cart[productIndexOnCart].order;
-      cart = cart;
+      const { name, order } = cart[productIndexOnCart];
+      if (await verifyIsAvailableByQuantity(name, order + 1)) {
+        ++cart[productIndexOnCart].order;
+        cart = cart;
+      }
     } else {
       newProduct.order = 1;
-      cart = [...cart, newProduct];
-    }
+      if (await verifyIsAvailableByQuantity(newProduct.name, newProduct.order))
+        cart = [...cart, newProduct];
+    } 
   };
 
   const scan = () => {
@@ -97,7 +111,7 @@
   const handleSearch = async (e) => {
     e.preventDefault();
     visibleProducts = await findByNameRegex(searchProductBy);
-  }
+  };
 
   const showNewProductDialog = () => {
     openModal(DialogNewProduct);
