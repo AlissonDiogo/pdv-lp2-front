@@ -167,6 +167,28 @@
     cart = [];
     closeModal();
   };
+
+  const handleInputProductQuantity = async (e, product) => {
+    const newQuantity = parseInt(e.target.value) || 0;
+    e.target.value = product.order;
+
+    if (newQuantity < 0) {
+      e.target.value = product.order;
+      return product.order;
+    }
+
+    if (
+      await verifyIsAvailableByQuantity(product.name, newQuantity)
+    ) {
+      return newQuantity;
+    } else {
+      openModal(DialogFailed, {
+        title: `Product is not available in ${newQuantity} quantity.`,
+      });
+      e.target.value = product.order;
+      return product.order;
+    }
+  }
 </script>
 
 <section id="sell-container">
@@ -204,10 +226,24 @@
       {#each cart as product, i}
         <li id={"cartProduct" + i}>
           <section>
-            <span>{product.order}x</span>
+            <input 
+              type=number
+              min=0
+              step=1
+              value={product.order}
+              on:input={
+                async (e) => {
+                  product.order = await handleInputProductQuantity(e, product);
+                  if (product.order === 0) {
+                    cart.splice(i, 1);
+                  }
+                } 
+              }
+              pattern="[0-9]"
+            >
             <h3>{product.name}</h3>
           </section>
-          <aside>$ {product.price * product.order}</aside>
+          <aside>$ {Number(product.price * product.order).toFixed(2)}</aside>
         </li>
       {/each}
     </ul>
@@ -273,6 +309,25 @@
 
   main > ul {
     overflow-y: scroll;
+  }
+
+  input[type=number] {
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  main > ul > li > section {
+    display: flex;
+    align-items: center;
+  }
+
+  main > ul > li > section > input[type=number] {
+    width: 70px;
+  }
+
+  main > ul > li {
+    display: flex;
+    align-items: center;
   }
 
   aside ul,
