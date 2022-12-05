@@ -18,6 +18,7 @@
     "html2pdf.js": "^0.10.1",
     "quagga": "^0.12.1",
     "svelte-modals": "^1.2.0",
-    "svelte-spa-router": "^3.3.0"
+    "svelte-spa-router": "^3.3.0",
+    "svelte-use-form": "^2.5.0"
   }
 }
