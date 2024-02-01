@@ -3,6 +3,10 @@
 Idea of a point of sale for exercise in a discipline, using concepts from object oriented programming.
 The idea consists in a simple and minimalist point of sale, however fast and efficient. At the point of sale the employee can create a new products and select the products to sale, as also inform the order. And finally, finalize the sale, generating a fiscal note.
 
+[![Video of demonstration](https://img.youtube.com/vi/D0etpKOWT10/0.jpg)](https://www.youtube.com/watch?v=D0etpKOWT10)
+
+Youtube video demonstration ↑
+
 ## Extensions in VSCODE
 
 - Svelte for VS Code
